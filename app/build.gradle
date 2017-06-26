@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+apply plugin: 'aspectplugin'
+
+android {
+  compileSdkVersion 25
+  buildToolsVersion '25.0.2'
+
+  buildTypes {
+    debug {
+      minifyEnabled false
+    }
+  }
+  defaultConfig {
+    applicationId 'com.netease.demo'
+    minSdkVersion 14
+    targetSdkVersion 25
+
+  }
+}
+
+buildscript {
+  repositories {
+    jcenter {
+      url "http://jcenter.bintray.com/"
+    }
+    maven {
+      url 'file:../release'
+    }
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:2.3.2'
+    classpath 'com.netease.plugin:aspectj-plugin:1.0.0'
+  }
+}
+
+repositories {
+  jcenter {
+    url "http://jcenter.bintray.com/"
+  }
+  mavenCentral()
+}
+
+dependencies {
+  compile 'org.aspectj:aspectjrt:1.8.9'
+}
+
+
