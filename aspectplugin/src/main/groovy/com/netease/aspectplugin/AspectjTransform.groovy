@@ -60,7 +60,6 @@ public class AspectjTransform extends Transform implements TaskExecutionListener
                    Collection<TransformInput> referencedInputs,
                    TransformOutputProvider outputProvider, boolean isIncremental) throws IOException, TransformException, InterruptedException {
 
-        //super.transform(context, inputs, referencedInputs, outputProvider, isIncremental)
         // clean
         if (!isIncremental) {
             outputProvider.deleteAll()
@@ -104,11 +103,12 @@ public class AspectjTransform extends Transform implements TaskExecutionListener
         FileUtils.mkdirs(resultDir)
         aspectjWeave.destDir = resultDir.absolutePath
 
-        List<String> includeJarfilter = [""]
-        List<String> excludeJarfilter = [""]
+        // step 1: read config from project.
+        List<String> includeJar = project.extensions.aspectj.includeJarFilter
+        List<String> excludeJar = project.extensions.aspectj.excludeJarFilter
         for (TransformInput transformInput : inputs) {
             for (DirectoryInput directoryInput : transformInput.directoryInputs) {
-                // directoryInput.file放到集合中
+                // put directoryInput.file into Collections.
                 aspectjWeave.aspectPath << directoryInput.file
                 aspectjWeave.inPath << directoryInput.file
                 aspectjWeave.classPath << directoryInput.file
@@ -120,8 +120,8 @@ public class AspectjTransform extends Transform implements TaskExecutionListener
                 aspectjWeave.classPath << jarInput.file
 
                 String jarPath =jarInput.file.absolutePath
-                if (isIncludeFilterMatched(jarPath, includeJarfilter)
-                    && !isExcludeFilterMatched(jarPath, excludeJarfilter)) {
+                if (isIncludeFilterMatched(jarPath, includeJar)
+                    && !isExcludeFilterMatched(jarPath, excludeJar)) {
 
                     AspectjLog.i "includeJar---${jarPath}"
                     aspectjWeave.inPath << jarInput.file
@@ -133,10 +133,10 @@ public class AspectjTransform extends Transform implements TaskExecutionListener
             }
         }
 
-        // 对class文件进行字节码插桩
+        // step 2: weave code.
         aspectjWeave.weaveCode()
 
-        // 处理最终jar包
+        // step 3: merge jars file.
         AspectjLog.i "aspectj jar merging......"
         handleOutput(resultDir, outputProvider)
         AspectjLog.i "aspect done..................."
@@ -147,7 +147,7 @@ public class AspectjTransform extends Transform implements TaskExecutionListener
                            Collection<TransformInput> inputs) {
         AspectjLog.i "There is no aspectjrt dependencies in classpath, " +
                 "Have you declare in Dependencies ? "
-        // 原样输出
+        // just output original files.
         inputs.each {
             TransformInput input ->
                 input.directoryInputs.each {

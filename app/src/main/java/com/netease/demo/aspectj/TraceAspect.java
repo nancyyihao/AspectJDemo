@@ -34,6 +34,11 @@ public class TraceAspect {
         long start  = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         long end = System.currentTimeMillis();
+
+        // Notice that if there are more than one process in your apps,
+        // you should use this way to distinguish the MainThread:
+        // https://stackoverflow.com/questions/11411022/how-to-check-if-current-thread-is-not-main-thread
+
         if (Thread.currentThread().getId() == BaseApplication.sUiThreadId) {
             Log.e("Aspectj", joinPoint.getSignature().getName() + " 总用时：" + (end-start) + "ms");
         }

@@ -20,7 +20,6 @@ public class AspectjWeave {
     public String bootClassPath
     public String encoding
     public String destDir
-    public List<String> ajcArgs
     private Project project
 
     AspectjWeave(Project project) {
@@ -67,20 +66,8 @@ public class AspectjWeave {
             args << getAspectPath().join(File.pathSeparator)
         }
 
-
-        if(ajcArgs != null && !ajcArgs.isEmpty()) {
-            if (!ajcArgs.contains('-Xlint')) {
-                args.add('-Xlint:ignore')
-            }
-            if (!ajcArgs.contains('-warn')) {
-                args.add('-warn:none')
-            }
-
-            args.addAll(ajcArgs)
-        } else {
-            args.add('-Xlint:ignore')
-            args.add('-warn:none')
-        }
+        args.add('-Xlint:ignore')
+        args.add('-warn:none')
 
         MessageHandler handler = new MessageHandler(true);
         Main m = new Main();
@@ -144,14 +131,6 @@ public class AspectjWeave {
 
     void setDestDir(String destDir) {
         this.destDir = destDir
-    }
-
-    List<String> getAjcArgs() {
-        return ajcArgs
-    }
-
-    void setAjcArgs(List<String> ajcArgs) {
-        this.ajcArgs = ajcArgs
     }
 
     ArrayList<File> getInPath() {
